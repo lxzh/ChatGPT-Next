@@ -561,16 +561,37 @@ export function Chat() {
     return lastUserMessageIndex;
   };
 
+  // 根据消息 id 查找消息索引
+  const findMessageIndex = (messageId: number) => {
+    // find message index
+    let messageIndex: number | null = null;
+    for (let i = 0; i < session.messages.length; i += 1) {
+      const message = session.messages[i];
+      if (message.id === messageId) {
+        messageIndex = i;
+        break;
+      }
+    }
+    console.log("findMessageIndex messageIndex:" + messageIndex);
+    return messageIndex;
+  };
+
   const deleteMessage = (userIndex: number) => {
     chatStore.updateCurrentSession((session) =>
-      session.messages.splice(userIndex, 2),
+      // 修改为一次删除一条消息
+      session.messages.splice(userIndex, 1),
     );
   };
 
   const onDelete = (botMessageId: number) => {
-    const userIndex = findLastUserIndex(botMessageId);
-    if (userIndex === null) return;
-    deleteMessage(userIndex);
+    // const userIndex = findLastUserIndex(botMessageId);
+    // if (userIndex === null) return;
+    // deleteMessage(userIndex);
+
+    // 修改为所以消息都可以删除
+    const messageIndex = findMessageIndex(botMessageId);
+    if (messageIndex === null) return;
+    deleteMessage(messageIndex);
   };
 
   const onResend = (botMessageId: number) => {
@@ -725,10 +746,10 @@ export function Chat() {
         {messages.map((message, i) => {
           const isUser = message.role === "user";
           const showActions =
-            !isUser &&
-            i > 0 &&
-            !(message.preview || message.content.length === 0);
+            i >= 0 && !(message.preview || message.content.length === 0);
           const showTyping = message.preview || message.streaming;
+          const isShortMessage =
+            !message.streaming && message.content.length <= 17 - fontSize / 2;
 
           return (
             <div
@@ -737,7 +758,15 @@ export function Chat() {
                 isUser ? styles["chat-message-user"] : styles["chat-message"]
               }
             >
-              <div className={styles["chat-message-container"]}>
+              <div
+                className={
+                  isUser
+                    ? isShortMessage
+                      ? styles["chat-message-user-container-short"]
+                      : styles["chat-message-user-container"]
+                    : styles["chat-message-container"]
+                }
+              >
                 <div className={styles["chat-message-avatar"]}>
                   <Avatar role={message.role} model={message.model} />
                 </div>
@@ -748,10 +777,22 @@ export function Chat() {
                 )}
                 <div className={styles["chat-message-item"]}>
                   {showActions && (
-                    <div className={styles["chat-message-top-actions"]}>
+                    <div
+                      className={
+                        isUser
+                          ? isShortMessage
+                            ? styles["chat-message-user-top-actions-short"]
+                            : styles["chat-message-user-top-actions"]
+                          : styles["chat-message-top-actions"]
+                      }
+                    >
                       {message.streaming ? (
                         <div
-                          className={styles["chat-message-top-action"]}
+                          className={
+                            isUser
+                              ? styles["chat-message-top-action"]
+                              : styles["chat-message-top-action"]
+                          }
                           onClick={() => onUserStop(message.id ?? i)}
                         >
                           {Locale.Chat.Actions.Stop}
@@ -764,12 +805,14 @@ export function Chat() {
                           >
                             {Locale.Chat.Actions.Delete}
                           </div>
-                          <div
-                            className={styles["chat-message-top-action"]}
-                            onClick={() => onResend(message.id ?? i)}
-                          >
-                            {Locale.Chat.Actions.Retry}
-                          </div>
+                          {!isUser && (
+                            <div
+                              className={styles["chat-message-top-action"]}
+                              onClick={() => onResend(message.id ?? i)}
+                            >
+                              {Locale.Chat.Actions.Retry}
+                            </div>
+                          )}
                         </>
                       )}
 
@@ -796,8 +839,14 @@ export function Chat() {
                     parentRef={scrollRef}
                   />
                 </div>
-                {!isUser && !message.preview && (
-                  <div className={styles["chat-message-actions"]}>
+                {!message.preview && (
+                  <div
+                    className={
+                      isUser
+                        ? styles["chat-message-user-actions"]
+                        : styles["chat-message-actions"]
+                    }
+                  >
                     <div className={styles["chat-message-action-date"]}>
                       {message.date.toLocaleString()}
                     </div>
