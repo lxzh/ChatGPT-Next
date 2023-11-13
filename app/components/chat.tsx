@@ -96,7 +96,7 @@ export function SessionConfigModel(props: { onClose: () => void }) {
             onClick={() => {
               if (confirm(Locale.Memory.ResetConfirm)) {
                 chatStore.updateCurrentSession(
-                  (session) => (session.memoryPrompt = ""),
+                  (session) => (session.memoryPrompt = "")
                 );
               }
             }}
@@ -218,7 +218,7 @@ export function PromptHints(props: {
         e.preventDefault();
         const nextIndex = Math.max(
           0,
-          Math.min(props.prompts.length - 1, selectIndex + delta),
+          Math.min(props.prompts.length - 1, selectIndex + delta)
         );
         setSelectIndex(nextIndex);
         selectedRef.current?.scrollIntoView({
@@ -274,7 +274,7 @@ function ClearContextDivider() {
       className={styles["clear-context"]}
       onClick={() =>
         chatStore.updateCurrentSession(
-          (session) => (session.clearContextIndex = undefined),
+          (session) => (session.clearContextIndex = undefined)
         )
       }
     >
@@ -294,7 +294,7 @@ function ChatAction(props: {
   const iconRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const [width, setWidth] = useState({
-    full: 16,
+    full: 32,
     icon: 16,
   });
 
@@ -321,7 +321,7 @@ function ChatAction(props: {
       style={
         {
           "--icon-width": `${width.icon}px`,
-          "--full-width": `${width.full}px`,
+          "--full-width": `${width.full + 100}px`,
         } as React.CSSProperties
       }
     >
@@ -509,7 +509,7 @@ export function Chat() {
       setPromptHints(matchedPrompts);
     },
     100,
-    { leading: true, trailing: true },
+    { leading: true, trailing: true }
   );
 
   // auto grow input
@@ -519,7 +519,7 @@ export function Chat() {
       const rows = inputRef.current ? autoGrowTextArea(inputRef.current) : 1;
       const inputRows = Math.min(
         20,
-        Math.max(2 + Number(!isMobileScreen), rows),
+        Math.max(2 + Number(!isMobileScreen), rows)
       );
       setInputRows(inputRows);
     },
@@ -527,7 +527,7 @@ export function Chat() {
     {
       leading: true,
       trailing: true,
-    },
+    }
   );
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -541,7 +541,7 @@ export function Chat() {
     next: () => chatStore.nextSession(1),
     clear: () =>
       chatStore.updateCurrentSession(
-        (session) => (session.clearContextIndex = session.messages.length),
+        (session) => (session.clearContextIndex = session.messages.length)
       ),
     del: () => chatStore.deleteSession(chatStore.currentSessionIndex),
   });
@@ -697,7 +697,7 @@ export function Chat() {
   const deleteMessage = (userIndex: number) => {
     chatStore.updateCurrentSession((session) =>
       // 修改为一次删除一条消息
-      session.messages.splice(userIndex, 1),
+      session.messages.splice(userIndex, 1)
     );
   };
 
@@ -731,7 +731,7 @@ export function Chat() {
 
     const userMessage = session.messages[userMessageIndex];
     chatStore.updateCurrentSession((session) =>
-      session.mask.context.push(userMessage, botMessage),
+      session.mask.context.push(userMessage, botMessage)
     );
 
     showToast(Locale.Chat.Actions.PinToastContent, {
@@ -779,7 +779,7 @@ export function Chat() {
               preview: true,
             },
           ]
-        : [],
+        : []
     )
     .concat(
       userInput.length > 0 && config.sendPreviewBubble
@@ -792,7 +792,7 @@ export function Chat() {
               preview: true,
             },
           ]
-        : [],
+        : []
     );
 
   const [showPromptModal, setShowPromptModal] = useState(false);
@@ -873,7 +873,7 @@ export function Chat() {
                 bordered
                 onClick={() => {
                   config.update(
-                    (config) => (config.tightBorder = !config.tightBorder),
+                    (config) => (config.tightBorder = !config.tightBorder)
                   );
                 }}
               />
